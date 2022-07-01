@@ -6,7 +6,7 @@ const websiteNameEl = document.getElementById("website-name");
 const websiteUrlEl = document.getElementById("website-url");
 const bookmarksContainer = document.getElementById("bookmarks-container");
 
-let bookmarks = [];
+let bookmarks = {};
 
 // Show modal, focus input
 function showModal() {
@@ -48,8 +48,9 @@ function buildBookmarks() {
   bookmarksContainer.textContent = "";
 
   // Build elements
-  bookmarks.forEach((bookmark) => {
-    const { name, url } = bookmark;
+  Object.keys(bookmarks).forEach((id) => {
+    const { name, url } = bookmarks[id];
+    console.log("Creating new bookmark", name, url);
 
     // Item
     const item = document.createElement("div");
@@ -98,12 +99,10 @@ function fetchBookmarks() {
 }
 
 // Delete bookmark
-function deleteBookmark(url) {
-  bookmarks.forEach((bookmark, i) => {
-    if (bookmark.url === url) {
-      bookmarks.splice(i, 1);
-    }
-  });
+function deleteBookmark(id) {
+  if (bookmarks[id]) {
+    delete bookmarks[id];
+  }
 
   // Update bookmarks array in localStorage, re-populate DOM
   localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
@@ -129,8 +128,9 @@ function storeBookmark(e) {
   };
 
   // Store new bookmark and update bookmark list
-  bookmarks.push(bookmark);
+  bookmarks[urlValue] = bookmark;
   localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
+  buildBookmarks();
 
   // Reset form and focus on name input
   bookmarkForm.reset();
